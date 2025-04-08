@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -40,6 +39,7 @@ interface ResultsProps {
       savings: number;
       cumulativeSavings: number;
     }>;
+    totalCost: number;
   };
 }
 
@@ -79,7 +79,7 @@ const ResultsDashboard = ({ results }: ResultsProps) => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">${results.monthlySavings}</p>
+            <p className="text-3xl font-bold">{results.monthlySavings}</p>
             <p className="text-sm text-gray-500">{results.savingsPercentage}% of current bill</p>
           </CardContent>
         </Card>
@@ -156,9 +156,9 @@ const ResultsDashboard = ({ results }: ResultsProps) => {
                       label={{ value: 'Year', position: 'insideBottomRight', offset: -10 }}
                     />
                     <YAxis
-                      label={{ value: 'Dollars ($)', angle: -90, position: 'insideLeft' }}
+                      label={{ value: 'Dollars (₹)', angle: -90, position: 'insideLeft' }}
                     />
-                    <Tooltip formatter={(value) => [`$${value}`, '']} />
+                    <Tooltip formatter={(value) => [`₹${value}`, '']} />
                     <Legend />
                     <Area 
                       type="monotone" 
@@ -249,8 +249,8 @@ const ResultsDashboard = ({ results }: ResultsProps) => {
                   ]} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
-                    <YAxis label={{ value: 'Annual Cost ($)', angle: -90, position: 'insideLeft' }} />
-                    <Tooltip formatter={(value) => [`$${value}`, 'Annual Energy Cost']} />
+                    <YAxis label={{ value: 'Annual Cost (₹)', angle: -90, position: 'insideLeft' }} />
+                    <Tooltip formatter={(value) => [`₹${value}`, 'Annual Energy Cost']} />
                     <Legend />
                     <Bar dataKey="cost" fill="#1976D2" name="Annual Energy Cost" />
                   </BarChart>
@@ -258,7 +258,7 @@ const ResultsDashboard = ({ results }: ResultsProps) => {
               </div>
               <div className="mt-4 text-sm text-gray-600">
                 <p>This chart compares your annual energy costs before and after installing your {results.systemType} system. 
-                With your chosen system, you'll save approximately ${results.annualSavings} per year on energy costs.</p>
+                With your chosen system, you'll save approximately ₹{results.annualSavings} per year on energy costs.</p>
               </div>
             </CardContent>
           </Card>
@@ -288,6 +288,7 @@ const ResultsDashboard = ({ results }: ResultsProps) => {
             {results.systemType === 'hybrid' && (
               <p>A hybrid system gives you the best of both worlds - solar generation and battery storage for maximum efficiency.</p>
             )}
+            <p>Total Cost: ₹{results.totalCost}</p>
           </div>
         </CardContent>
       </Card>

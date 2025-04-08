@@ -89,7 +89,7 @@ const SystemComparison = ({ budget }: SystemComparisonProps) => {
   
   // Format numbers for display
   const formatCurrency = (value: number) => {
-    return `$${Math.round(value).toLocaleString()}`;
+    return `₹${Math.round(value).toLocaleString()}`;
   };
   
   const formatDecimal = (value: number) => {

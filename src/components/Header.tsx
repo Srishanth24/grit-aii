@@ -10,7 +10,7 @@ const Header = () => {
       <div className="eco-container flex items-center justify-between h-16">
         <Link to="/" className="flex items-center space-x-2">
           <Sun className="h-8 w-8 text-eco-green-600" />
-          <span className="font-heading font-bold text-xl">EnviroVest AI</span>
+          <span className="font-heading font-bold text-xl">GRIT </span>
         </Link>
         
         <nav className="hidden md:flex items-center space-x-8">

@@ -91,7 +91,7 @@ const QuickEstimator = () => {
                   <Card className="bg-eco-green-50 border-eco-green-100">
                     <CardContent className="p-4 text-center">
                       <p className="text-sm text-eco-green-700 font-medium">Monthly Savings</p>
-                      <p className="text-3xl font-bold text-eco-green-800">${estimate.monthlySavings}</p>
+                      <p className="text-3xl font-bold text-eco-green-800">₹{estimate.monthlySavings}</p>
                     </CardContent>
                   </Card>
                   <Card className="bg-eco-blue-50 border-eco-blue-100">

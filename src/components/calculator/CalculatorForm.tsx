@@ -151,7 +151,7 @@ const CalculatorForm = ({ onCalculate }: Props) => {
 
   // Custom label formatter for the budget slider
   const formatBudgetLabel = (value: number) => {
-    return `$${value.toLocaleString()}`;
+    return `₹${value.toLocaleString()}`;
   };
 
   const userTypeLabels = {
