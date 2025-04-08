@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
@@ -247,40 +246,29 @@ const CalculatorForm = ({ onCalculate }: Props) => {
 
           <div className="space-y-2">
             <label className="text-sm font-medium">System Type</label>
-            <Tabs defaultValue={formState.systemType} onValueChange={(value) => handleSelectChange('systemType', value)}>
-              <TabsList className="grid grid-cols-4 w-full">
+            <Tabs
+              defaultValue={formState.systemType}
+              onValueChange={(value) => handleSelectChange('systemType', value)}
+            >
+              {/* Center the tabs using flex and slight spacing */}
+              <TabsList className="flex justify-center space-x-2">
                 <TabsTrigger value="solar" className="flex items-center">
                   <Sun className="mr-2 h-4 w-4" /> Solar
                 </TabsTrigger>
                 <TabsTrigger value="wind" className="flex items-center">
                   <Wind className="mr-2 h-4 w-4" /> Wind
                 </TabsTrigger>
-                <TabsTrigger value="battery" className="flex items-center">
-                  <Battery className="mr-2 h-4 w-4" /> Battery
-                </TabsTrigger>
-                <TabsTrigger value="hybrid" className="flex items-center">
-                  <Sun className="mr-1 h-3 w-3" />
-                  <Battery className="h-3 w-3" /> Hybrid
-                </TabsTrigger>
               </TabsList>
+
               <TabsContent value="solar" className="mt-2">
                 <p className="text-sm text-gray-500">
                   Solar panels convert sunlight into electricity, ideal for areas with good sun exposure.
                 </p>
               </TabsContent>
+              
               <TabsContent value="wind" className="mt-2">
                 <p className="text-sm text-gray-500">
                   Wind turbines harness wind energy, perfect for open areas with consistent wind patterns.
-                </p>
-              </TabsContent>
-              <TabsContent value="battery" className="mt-2">
-                <p className="text-sm text-gray-500">
-                  Battery storage systems store excess energy for use during peak times or outages.
-                </p>
-              </TabsContent>
-              <TabsContent value="hybrid" className="mt-2">
-                <p className="text-sm text-gray-500">
-                  Combines solar panels with battery storage for optimized energy generation and usage.
                 </p>
               </TabsContent>
             </Tabs>
