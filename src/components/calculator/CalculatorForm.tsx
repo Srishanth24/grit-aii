@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
@@ -40,7 +41,7 @@ const CalculatorForm = ({ onCalculate }: Props) => {
   const [formState, setFormState] = useState<FormState>({
     location: '',
     energyUsage: 800, // Default monthly kWh
-    budget: 20000, // Default budget in dollars
+    budget: 50000, // Default budget in rupees
     systemType: 'solar',
     userType: userTypeParam,
   });
@@ -86,9 +87,9 @@ const CalculatorForm = ({ onCalculate }: Props) => {
       };
       
       const systemSizes = {
-        solar: formState.budget / 2500, // $2500 per kW
-        wind: formState.budget / 5000, // $5000 per kW
-        battery: formState.budget / 800, // $800 per kWh
+        solar: formState.budget / 2500, // ₹2500 per kW
+        wind: formState.budget / 5000, // ₹5000 per kW
+        battery: formState.budget / 800, // ₹800 per kWh
         hybrid: formState.budget / 3500 // Blended rate
       };
       
@@ -105,7 +106,7 @@ const CalculatorForm = ({ onCalculate }: Props) => {
       const adjustedProduction = annualProduction * userTypeMultiplier[formState.userType as keyof typeof userTypeMultiplier];
       
       // Calculate savings
-      const electricityRate = 0.15; // $ per kWh
+      const electricityRate = 0.15; // ₹ per kWh
       const annualSavings = adjustedProduction * electricityRate;
       const monthlyBill = formState.energyUsage * electricityRate;
       const monthlySavings = annualSavings / 12;
@@ -130,6 +131,7 @@ const CalculatorForm = ({ onCalculate }: Props) => {
         breakEvenYears: Math.round(breakEvenYears * 10) / 10,
         roi10Year: Math.round(roi10Year),
         co2Reduction: Math.round(annualCO2Reduction * 10) / 10,
+        totalCost: formState.budget,
         // Add data for charts
         monthlyData: Array.from({ length: 12 }, (_, i) => ({
           month: new Date(2025, i).toLocaleString('default', { month: 'short' }),
@@ -157,6 +159,13 @@ const CalculatorForm = ({ onCalculate }: Props) => {
     commercial: "Business",
     agricultural: "Agricultural",
     residential: "Residential"
+  };
+  
+  // Updated budget ranges for the slider
+  const budgetRanges = {
+    commercial: { min: 100000, max: 800000 },
+    agricultural: { min: 75000, max: 800000 },
+    residential: { min: 50000, max: 800000 }
   };
 
   return (
@@ -223,22 +232,18 @@ const CalculatorForm = ({ onCalculate }: Props) => {
             <div className="space-y-4">
               <Slider
                 defaultValue={[formState.budget]}
-                max={formState.userType === 'commercial' ? 500000 : 
-                      formState.userType === 'agricultural' ? 200000 : 50000}
-                min={formState.userType === 'commercial' ? 20000 : 
-                     formState.userType === 'agricultural' ? 10000 : 5000}
+                max={budgetRanges[formState.userType as keyof typeof budgetRanges].max}
+                min={budgetRanges[formState.userType as keyof typeof budgetRanges].min}
                 step={1000}
                 onValueChange={(value) => handleSliderChange('budget', value)}
               />
               <div className="flex justify-between">
                 <span className="text-sm text-gray-500">
-                  {formatBudgetLabel(formState.userType === 'commercial' ? 20000 : 
-                                    formState.userType === 'agricultural' ? 10000 : 5000)}
+                  {formatBudgetLabel(budgetRanges[formState.userType as keyof typeof budgetRanges].min)}
                 </span>
                 <span className="text-sm font-medium">{formatBudgetLabel(formState.budget)}</span>
                 <span className="text-sm text-gray-500">
-                  {formatBudgetLabel(formState.userType === 'commercial' ? 500000 : 
-                                    formState.userType === 'agricultural' ? 200000 : 50000)}
+                  {formatBudgetLabel(budgetRanges[formState.userType as keyof typeof budgetRanges].max)}
                 </span>
               </div>
             </div>
@@ -258,6 +263,12 @@ const CalculatorForm = ({ onCalculate }: Props) => {
                 <TabsTrigger value="wind" className="flex items-center">
                   <Wind className="mr-2 h-4 w-4" /> Wind
                 </TabsTrigger>
+                <TabsTrigger value="hybrid" className="flex items-center">
+                  <Sun className="mr-2 h-4 w-4" /> Hybrid
+                </TabsTrigger>
+                <TabsTrigger value="battery" className="flex items-center">
+                  <Battery className="mr-2 h-4 w-4" /> Battery
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="solar" className="mt-2">
@@ -269,6 +280,18 @@ const CalculatorForm = ({ onCalculate }: Props) => {
               <TabsContent value="wind" className="mt-2">
                 <p className="text-sm text-gray-500">
                   Wind turbines harness wind energy, perfect for open areas with consistent wind patterns.
+                </p>
+              </TabsContent>
+              
+              <TabsContent value="hybrid" className="mt-2">
+                <p className="text-sm text-gray-500">
+                  Hybrid systems combine solar and wind technologies for more consistent energy production.
+                </p>
+              </TabsContent>
+              
+              <TabsContent value="battery" className="mt-2">
+                <p className="text-sm text-gray-500">
+                  Battery storage systems store excess energy for use during peak demand or outages.
                 </p>
               </TabsContent>
             </Tabs>

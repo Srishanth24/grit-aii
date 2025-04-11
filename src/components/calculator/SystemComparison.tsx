@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   Table, 
@@ -102,6 +103,18 @@ const SystemComparison = ({ budget }: SystemComparisonProps) => {
               <TableCell>{formatDecimal(data.systemSizes.wind)} kW</TableCell>
               <TableCell>{formatCurrency(data.annualSavings.wind)}</TableCell>
               <TableCell>{formatDecimal(data.breakEven.wind)} years</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Battery Storage</TableCell>
+              <TableCell>{formatDecimal(data.systemSizes.battery)} kWh</TableCell>
+              <TableCell>{formatCurrency(data.annualSavings.battery)}</TableCell>
+              <TableCell>{formatDecimal(data.breakEven.battery)} years</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Hybrid System</TableCell>
+              <TableCell>{formatDecimal(data.systemSizes.hybrid)} kW</TableCell>
+              <TableCell>{formatCurrency(data.annualSavings.hybrid)}</TableCell>
+              <TableCell>{formatDecimal(data.breakEven.hybrid)} years</TableCell>
             </TableRow>
           </TableBody>
         </Table>

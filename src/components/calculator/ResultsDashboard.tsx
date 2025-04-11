@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -46,18 +47,24 @@ interface ResultsProps {
 const ResultsDashboard = ({ results }: ResultsProps) => {
   const systemTypeLabel = {
     solar: "Solar Panel System",
-    wind: "Wind Turbine System"
+    wind: "Wind Turbine System",
+    battery: "Battery Storage System",
+    hybrid: "Hybrid Energy System"
   };
 
   const systemSizeUnits = {
     solar: "kW",
-    wind: "kW"
+    wind: "kW",
+    battery: "kWh",
+    hybrid: "kW"
   };
 
   // Example costs per unit (adjust based on actual data)
   const costPerUnit = {
     solar: 50000, // Cost per solar panel in ₹
-    wind: 150000 // Cost per wind turbine in ₹
+    wind: 150000, // Cost per wind turbine in ₹
+    battery: 40000, // Cost per battery unit in ₹
+    hybrid: 75000  // Cost per hybrid unit in ₹
   };
 
   // Function to calculate the number of units needed within the budget
@@ -91,7 +98,7 @@ const ResultsDashboard = ({ results }: ResultsProps) => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{results.monthlySavings}</p>
+            <p className="text-3xl font-bold">₹{results.monthlySavings.toLocaleString()}</p>
             <p className="text-sm text-gray-500">{results.savingsPercentage}% of current bill</p>
           </CardContent>
         </Card>
@@ -148,7 +155,7 @@ const ResultsDashboard = ({ results }: ResultsProps) => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="year" />
                     <YAxis />
-                    <Tooltip formatter={(value) => [`₹${value}`, '']} />
+                    <Tooltip formatter={(value) => [`₹${value.toLocaleString()}`, '']} />
                     <Legend />
                     <Area 
                       type="monotone" 
@@ -210,14 +217,14 @@ const ResultsDashboard = ({ results }: ResultsProps) => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
                     <YAxis />
-                    <Tooltip formatter={(value) => [`₹${value}`, 'Annual Energy Cost']} />
+                    <Tooltip formatter={(value) => [`₹${value.toLocaleString()}`, 'Annual Energy Cost']} />
                     <Legend />
                     <Bar dataKey="cost" fill="#1976D2" name="Annual Energy Cost" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
               <div className="mt-4 text-sm text-gray-600">
-                <p>This chart compares your annual energy costs before and after installing your {results.systemType} system. With your chosen system, you'll save approximately ₹{results.annualSavings} per year on energy costs.</p>
+                <p>This chart compares your annual energy costs before and after installing your {results.systemType} system. With your chosen system, you'll save approximately ₹{results.annualSavings.toLocaleString()} per year on energy costs.</p>
               </div>
             </CardContent>
           </Card>
@@ -226,18 +233,23 @@ const ResultsDashboard = ({ results }: ResultsProps) => {
       
       <Card>
         <CardHeader>
-          <CardTitle>AI Recommendation</CardTitle>
+          <CardTitle>GRIT Recommendation</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="bg-eco-green-50 border-l-4 border-eco-green-500 p-4 rounded">
             <h3 className="font-bold text-lg mb-2">Your {systemTypeLabel[results.systemType as keyof typeof systemTypeLabel]} is a great fit!</h3>
             <p className="mb-3">
-              Based on your budget of ₹{userBudget}, you can install approximately <strong>{unitsNeeded}</strong> {results.systemType === "solar" ? "solar panels" : "wind turbines"}.
+              Based on your budget of ₹{userBudget.toLocaleString()}, you can install approximately <strong>{unitsNeeded}</strong> {
+                results.systemType === "solar" ? "solar panels" : 
+                results.systemType === "wind" ? "wind turbines" : 
+                results.systemType === "battery" ? "battery units" :
+                "hybrid energy units"
+              }.
             </p>
             <p>
               This will help you achieve your energy goals effectively while staying within your budget.
             </p>
-            <p>Total Cost: ₹{results.totalCost}</p>
+            <p className="mt-2">Total Cost: ₹{results.totalCost.toLocaleString()}</p>
           </div>
         </CardContent>
       </Card>
