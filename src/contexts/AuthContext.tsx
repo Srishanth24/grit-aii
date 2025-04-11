@@ -1,6 +1,5 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import type { User, Session } from '@supabase/supabase-js';
 import { useToast } from '@/hooks/use-toast';
 
@@ -20,8 +19,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
   const { toast } = useToast();
-
+  
   useEffect(() => {
+    // Show a visible warning if Supabase is not configured
+    if (!isSupabaseConfigured()) {
+      toast({
+        title: "Supabase configuration missing",
+        description: "Please set up your VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.",
+        variant: "destructive",
+        duration: 10000,
+      });
+    }
+    
     // Check active session on mount
     setIsLoading(true);
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -40,7 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [toast]);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
