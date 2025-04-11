@@ -1,10 +1,8 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-
-interface User {
-  name?: string;
-  email: string;
-}
+import { supabase } from '@/lib/supabase';
+import type { User, Session } from '@supabase/supabase-js';
+import { useToast } from '@/hooks/use-toast';
 
 interface AuthContextType {
   user: User | null;
@@ -12,7 +10,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,71 +18,98 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [session, setSession] = useState<Session | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
-    // Check if user is already logged in
-    const token = localStorage.getItem('grit_token');
-    const storedUser = localStorage.getItem('grit_user');
-    
-    if (token && storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        console.error('Failed to parse user data:', error);
-        // Clear invalid data
-        localStorage.removeItem('grit_token');
-        localStorage.removeItem('grit_user');
-      }
-    }
-    
-    setIsLoading(false);
+    // Check active session on mount
+    setIsLoading(true);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setIsLoading(false);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setIsLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
-    
-    // This would be replaced with actual API call
-    return new Promise<void>((resolve, reject) => {
-      setTimeout(() => {
-        // Simulate successful login
-        const newUser = { email };
-        setUser(newUser);
-        
-        // Store user info in localStorage
-        localStorage.setItem('grit_token', 'mock_token_' + Date.now());
-        localStorage.setItem('grit_user', JSON.stringify(newUser));
-        
-        setIsLoading(false);
-        resolve();
-      }, 1000);
-    });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      return Promise.resolve();
+    } catch (error: any) {
+      toast({
+        title: "Login failed",
+        description: error.message || "Failed to login. Please try again.",
+        variant: "destructive",
+      });
+      return Promise.reject(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const signup = async (name: string, email: string, password: string) => {
     setIsLoading(true);
-    
-    // This would be replaced with actual API call
-    return new Promise<void>((resolve, reject) => {
-      setTimeout(() => {
-        // Simulate successful signup
-        const newUser = { name, email };
-        setUser(newUser);
-        
-        // Store user info in localStorage
-        localStorage.setItem('grit_token', 'mock_token_' + Date.now());
-        localStorage.setItem('grit_user', JSON.stringify(newUser));
-        
-        setIsLoading(false);
-        resolve();
-      }, 1000);
-    });
+    try {
+      // Sign up with email and password
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name,
+          }
+        }
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      return Promise.resolve();
+    } catch (error: any) {
+      toast({
+        title: "Signup failed",
+        description: error.message || "Failed to create account. Please try again.",
+        variant: "destructive",
+      });
+      return Promise.reject(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const logout = () => {
-    // Clear user data from state and localStorage
-    setUser(null);
-    localStorage.removeItem('grit_token');
-    localStorage.removeItem('grit_user');
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+      return Promise.resolve();
+    } catch (error: any) {
+      toast({
+        title: "Logout failed",
+        description: error.message || "Failed to logout. Please try again.",
+        variant: "destructive",
+      });
+      return Promise.reject(error);
+    }
   };
 
   return (

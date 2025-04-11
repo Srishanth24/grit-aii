@@ -2,6 +2,7 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { Loader2 } from 'lucide-react';
 
 interface PrivateRouteProps {
   children: React.ReactNode;
@@ -13,7 +14,11 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
 
   // Show loading state while checking authentication
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-[#9b87f5]" />
+      </div>
+    );
   }
 
   // Redirect to login if not authenticated

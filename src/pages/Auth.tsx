@@ -1,17 +1,30 @@
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import AuthForm from '@/components/auth/AuthForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Leaf } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Auth = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated } = useAuth();
   
+  // Get the intended destination, or default to calculator
+  const from = location.state?.from?.pathname || "/calculator";
+  
+  useEffect(() => {
+    // If user is already authenticated, redirect to the intended destination
+    if (isAuthenticated) {
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, from]);
+
   const handleSuccess = () => {
-    navigate('/calculator');
+    navigate(from, { replace: true });
   };
 
   return (
