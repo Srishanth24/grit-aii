@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AuthForm from '@/components/auth/AuthForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -10,20 +10,36 @@ import { useAuth } from '@/contexts/AuthContext';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
+interface LocationState {
+  from?: { pathname: string };
+  activeTab?: 'login' | 'signup';
+}
+
 const Auth = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated } = useAuth();
+  const locationState = location.state as LocationState;
+  
+  // Get the active tab from location state, default to 'login'
+  const [activeTab, setActiveTab] = useState<'login' | 'signup'>(
+    locationState?.activeTab || 'login'
+  );
   
   // Get the intended destination, or default to calculator
-  const from = location.state?.from?.pathname || "/calculator";
+  const from = locationState?.from?.pathname || "/calculator";
   
   useEffect(() => {
     // If user is already authenticated, redirect to the intended destination
     if (isAuthenticated) {
       navigate(from, { replace: true });
     }
-  }, [isAuthenticated, navigate, from]);
+    
+    // Update active tab if it's passed in location state
+    if (locationState?.activeTab) {
+      setActiveTab(locationState.activeTab);
+    }
+  }, [isAuthenticated, navigate, from, locationState?.activeTab]);
 
   const handleSuccess = () => {
     navigate(from, { replace: true });
@@ -62,7 +78,7 @@ const Auth = () => {
                 </AlertDescription>
               </Alert>
             )}
-            <AuthForm onSuccess={handleSuccess} />
+            <AuthForm onSuccess={handleSuccess} initialTab={activeTab} />
           </CardContent>
           {!isConfigured && (
             <CardFooter className="flex flex-col items-center text-xs text-gray-500">

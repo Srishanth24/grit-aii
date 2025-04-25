@@ -1,10 +1,23 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Sun } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import AuthHeader from '@/components/AuthHeader';
 
 const Header = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  
+  const handleLoginClick = () => {
+    navigate('/auth', { state: { activeTab: 'login' } });
+  };
+  
+  const handleSignupClick = () => {
+    navigate('/auth', { state: { activeTab: 'signup' } });
+  };
+
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
       <div className="eco-container flex items-center justify-between h-16">
@@ -21,12 +34,25 @@ const Header = () => {
         </nav>
         
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" className="text-eco-green-700 hover:text-eco-green-800 hover:bg-eco-green-50">
-            Login
-          </Button>
-          <Button className="bg-eco-green-600 hover:bg-eco-green-700">
-            Sign Up
-          </Button>
+          {isAuthenticated ? (
+            <AuthHeader />
+          ) : (
+            <>
+              <Button 
+                variant="ghost" 
+                className="text-eco-green-700 hover:text-eco-green-800 hover:bg-eco-green-50"
+                onClick={handleLoginClick}
+              >
+                Login
+              </Button>
+              <Button 
+                className="bg-eco-green-600 hover:bg-eco-green-700"
+                onClick={handleSignupClick}
+              >
+                Sign Up
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -42,14 +41,15 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 
 interface AuthFormProps {
   onSuccess: () => void;
+  initialTab?: 'login' | 'signup';
 }
 
-const AuthForm = ({ onSuccess }: AuthFormProps) => {
+const AuthForm = ({ onSuccess, initialTab = 'login' }: AuthFormProps) => {
   const { toast } = useToast();
   const { login, signup } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>(initialTab);
 
   // Login form
   const loginForm = useForm<LoginFormValues>({
